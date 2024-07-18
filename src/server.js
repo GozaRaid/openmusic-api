@@ -1,15 +1,19 @@
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
+const ClientError = require('./exceptions/ClientError');
+
 const albums = require('./api/albums');
 const AlbumsValidator = require('./validator/albums');
-const AlbumService = require('./services/postgres/album/AlbumService');
+const AlbumService = require('./services/postgres/AlbumService');
+
 const songs = require('./api/songs');
 const SongsValidator = require('./validator/songs');
-const ClientError = require('./exceptions/ClientError');
+const SongService = require('./services/postgres/SongService');
 
 const init = async () => {
   const albumService = new AlbumService();
+  const songService = new SongService();
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -31,7 +35,7 @@ const init = async () => {
     {
       plugin: songs,
       options: {
-        service: /* */,
+        service: songService,
         validator: SongsValidator,
       },
     },
@@ -39,12 +43,33 @@ const init = async () => {
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
-    if (response instanceof ClientError) {
+    // if (response instanceof ClientError) {
+    //   const newResponse = h.response({
+    //     status: 'fail',
+    //     message: response.message,
+    //   });
+    //   newResponse.code(response.statusCode);
+    //   return newResponse;
+    // }
+
+    if (response instanceof Error) {
+      if (response instanceof ClientError) {
+        const newResponse = h.response({
+          status: 'fail',
+          message: response.message,
+        });
+        newResponse.code(response.statusCode);
+        return newResponse;
+      }
+
+      if (!response.isServer) {
+        return h.continue;
+      }
       const newResponse = h.response({
-        status: 'fail',
-        message: response.message,
-      })
-      newResponse.code(response.statusCode);
+        status: 'error',
+        message: 'terjadi kegagalan pada server kami',
+      });
+      newResponse.code(500);
       return newResponse;
     }
     return h.continue;
