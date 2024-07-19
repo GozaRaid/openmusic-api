@@ -22,23 +22,21 @@ exports.up = (pgm) => {
       type: 'INTEGER',
       notNull: true,
     },
-    performer: {
+    genre: {
       type: 'TEXT',
       notNull: true,
     },
-    genre: {
+    performer: {
       type: 'TEXT',
       notNull: true,
     },
     duration: {
       type: 'INTEGER',
-      default: null,
+      notNull: false,
     },
     albumId: {
       type: 'VARCHAR(50)',
-      default: null,
-      references: 'albums(id)',
-      onDelete: 'CASCADE',
+      notNull: false,
     },
     created_at: {
       type: 'TEXT',

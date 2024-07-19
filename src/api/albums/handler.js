@@ -1,12 +1,11 @@
+const autoBind = require('auto-bind');
+
 class AlbumsHandler {
   constructor(service, validator) {
     this._service = service;
     this._validator = validator;
 
-    this.postAlbumHandler = this.postAlbumHandler.bind(this);
-    this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
-    this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
-    this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
+    autoBind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -17,6 +16,7 @@ class AlbumsHandler {
 
     const response = h.response({
       status: 'success',
+      message: 'Album berhasil ditambahkan',
       data: {
         albumId,
       },
