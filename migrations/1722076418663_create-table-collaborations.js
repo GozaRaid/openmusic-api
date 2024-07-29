@@ -9,49 +9,32 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-  pgm.createTable('songs', {
+  pgm.createTable('collaborations', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
     },
-    title: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    year: {
-      type: 'INTEGER',
-      notNull: true,
-    },
-    genre: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    performer: {
-      type: 'TEXT',
-      notNull: true,
-    },
-    duration: {
-      type: 'INTEGER',
-      notNull: false,
-    },
-    albumId: {
+    playlist_id: {
       type: 'VARCHAR(50)',
-      notNull: false,
-    },
-    created_at: {
-      type: 'TEXT',
       notNull: true,
     },
-    updated_at: {
-      type: 'TEXT',
+    user_id: {
+      type: 'VARCHAR(50)',
       notNull: true,
     },
   });
 
-  pgm.addConstraint('songs', 'fk_songs.albumId_albums.id', {
+  pgm.addConstraint('collaborations', 'fk_collaborations.playlist_id_playlists.id', {
     foreignKeys: {
-      columns: 'albumId',
-      references: 'albums(id)',
+      columns: 'playlist_id',
+      references: 'playlists(id)',
+      onDelete: 'CASCADE',
+    },
+  });
+  pgm.addConstraint('collaborations', 'fk_collaborations.user_id_users.id', {
+    foreignKeys: {
+      columns: 'user_id',
+      references: 'users(id)',
       onDelete: 'CASCADE',
     },
   });
@@ -63,5 +46,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('songs');
+  pgm.dropTable('collaborations');
 };

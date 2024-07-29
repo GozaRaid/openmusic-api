@@ -14,11 +14,10 @@ class SongService {
   }) {
     const id = `song-${nanoid(16)}`;
     const createAt = new Date().toISOString();
-    const updatedAt = createAt;
 
     const query = {
-      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
-      values: [id, title, year, genre, performer, duration, albumId, createAt, updatedAt],
+      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $8) RETURNING id',
+      values: [id, title, year, genre, performer, duration, albumId, createAt],
     };
 
     const result = await this._pool.query(query);
@@ -47,8 +46,6 @@ class SongService {
       throw new NotFoundError('Lagu tidak ditemukan');
     }
     return result.rows.map(mapDBToModelSong);
-    // const result = await this._pool.query('SELECT id, title, performer FROM songs');
-    // return result.rows.map(mapDBToModelSong);
   }
 
   async getSongById(id) {
@@ -60,7 +57,7 @@ class SongService {
     if (!result.rowCount) {
       throw new NotFoundError('Lagu tidak ditemukan');
     }
-    return result.rows.map(mapDBToModelSong)[0];
+    return mapDBToModelSong(result.rows[0]);
   }
 
   async editSongById(id, {
