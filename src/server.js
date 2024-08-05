@@ -4,20 +4,20 @@ const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 const ClientError = require('./exceptions/ClientError');
 
-// album
+// albums
 const albums = require('./api/albums');
 const AlbumsValidator = require('./validator/albums');
 const AlbumService = require('./services/postgres/AlbumService');
 
-// song
+// songs
 const songs = require('./api/songs');
 const SongsValidator = require('./validator/songs');
 const SongService = require('./services/postgres/SongService');
 
-// user
+// users
 const users = require('./api/users');
-const UserService = require('./services/postgres/UserService');
 const UsersValidator = require('./validator/users');
+const UserService = require('./services/postgres/UserService');
 
 // authentications
 const authentications = require('./api/authentications');
@@ -30,12 +30,18 @@ const playlist = require('./api/playlists');
 const PlaylistValidator = require('./validator/playlists');
 const PlaylistService = require('./services/postgres/PlaylistService');
 
+// collaborations
+const collaborations = require('./api/collaborations');
+const CollaborationsValidator = require('./validator/collaborations');
+const CollaborationService = require('./services/postgres/CollaborationService');
+
 const init = async () => {
+  const collaborationService = new CollaborationService();
   const albumService = new AlbumService();
   const songService = new SongService();
   const userService = new UserService();
   const authenticationService = new AuthenticationService();
-  const playlistService = new PlaylistService();
+  const playlistService = new PlaylistService(collaborationService);
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -106,6 +112,15 @@ const init = async () => {
         playlistsService: playlistService,
         songsService: songService,
         validator: PlaylistValidator,
+      },
+    },
+    {
+      plugin: collaborations,
+      options: {
+        collaborationsService: collaborationService,
+        playlistsService: playlistService,
+        usersService: userService,
+        validator: CollaborationsValidator,
       },
     },
   ]);
