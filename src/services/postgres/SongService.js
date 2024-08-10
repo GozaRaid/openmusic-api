@@ -45,7 +45,7 @@ class SongService {
     if (!result.rowCount) {
       throw new NotFoundError('Lagu tidak ditemukan');
     }
-    return result.rows.map(mapDBToModelSong);
+    return result.rows;
   }
 
   async getSongById(id) {
@@ -53,11 +53,11 @@ class SongService {
       text: 'SELECT * FROM songs WHERE id = $1',
       values: [id],
     };
-    const result = await this._pool.query(query);
-    if (!result.rowCount) {
+    const { rows, rowCount } = await this._pool.query(query);
+    if (!rowCount) {
       throw new NotFoundError('Lagu tidak ditemukan');
     }
-    return mapDBToModelSong(result.rows[0]);
+    return mapDBToModelSong(rows[0]);
   }
 
   async editSongById(id, {

@@ -8,34 +8,36 @@
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-  pgm.createTable('collaborations', {
+  pgm.createTable('user_album_likes', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
-    },
-    playlist_id: {
-      type: 'VARCHAR(50)',
-      notNull: true,
     },
     user_id: {
       type: 'VARCHAR(50)',
       notNull: true,
     },
-  });
-
-  pgm.addConstraint('collaborations', 'fk_collaborations.playlist_id_playlists.id', {
-    foreignKeys: {
-      columns: 'playlist_id',
-      references: 'playlists(id)',
-      onDelete: 'CASCADE',
+    album_id: {
+      type: 'VARCHAR(50)',
+      notNull: true,
     },
   });
-  pgm.addConstraint('collaborations', 'fk_collaborations.user_id_users.id', {
+  pgm.addConstraint('user_album_likes', 'fk_user_album_likes.user_id_users.id', {
     foreignKeys: {
       columns: 'user_id',
       references: 'users(id)',
       onDelete: 'CASCADE',
     },
+  });
+  pgm.addConstraint('user_album_likes', 'fk_user_album_likes.album_id_albums.id', {
+    foreignKeys: {
+      columns: 'album_id',
+      references: 'albums(id)',
+      onDelete: 'CASCADE',
+    },
+  });
+  pgm.addConstraint('user_album_likes', 'unique_user_album', {
+    unique: ['user_id', 'album_id'],
   });
 };
 
@@ -45,5 +47,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('collaborations');
+  pgm.dropTable('user_album_likes');
 };
