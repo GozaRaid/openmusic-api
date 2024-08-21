@@ -11,7 +11,7 @@ class CollaborationsService {
     const id = `collab-${nanoid(16)}`;
 
     const query = {
-      text: 'Insert INTO collaborations VALUES($1, $2, $3) RETURNING id',
+      text: 'INSERT INTO collaborations VALUES($1, $2, $3) RETURNING id',
       values: [id, playlistId, userId],
     };
 
@@ -30,8 +30,8 @@ class CollaborationsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new InvariantError('Kolaborasi gagal dihapus. Id tidak ditemukan');
+    if (!result.rowCount) {
+      throw new InvariantError('Kolaborasi gagal dihapus');
     }
   }
 
@@ -42,8 +42,8 @@ class CollaborationsService {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
-      throw new InvariantError('Kolaborasi gagal diverifikasi. Id tidak ditemukan');
+    if (!result.rowCount) {
+      throw new InvariantError('Kolaborasi gagal diverifikasi');
     }
   }
 }

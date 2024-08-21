@@ -41,11 +41,11 @@ class SongService {
       baseQuery += ` AND performer ILIKE $${queryParams.length}`;
     }
 
-    const result = await this._pool.query(baseQuery, queryParams);
-    if (!result.rowCount) {
+    const { rows, rowCount } = await this._pool.query(baseQuery, queryParams);
+    if (!rowCount) {
       throw new NotFoundError('Lagu tidak ditemukan');
     }
-    return result.rows;
+    return rows;
   }
 
   async getSongById(id) {
@@ -87,17 +87,6 @@ class SongService {
     const result = await this._pool.query(query);
     if (!result.rowCount) {
       throw new NotFoundError('Lagu gagal dihapus. Id tidak ditemukan');
-    }
-  }
-
-  async verifySongId(id) {
-    const query = {
-      text: 'SELECT * FROM songs WHERE id = $1',
-      values: [id],
-    };
-    const result = await this._pool.query(query);
-    if (!result.rowCount) {
-      throw new NotFoundError('Lagu tidak ditemukan');
     }
   }
 }
